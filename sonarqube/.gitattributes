@@ -1,2 +1,2 @@
 secretfile filter=git-crypt diff=git-crypt
-values.yaml filter=git-crypt diff=git-crypt
+*.yaml filter=git-crypt diff=git-crypt
