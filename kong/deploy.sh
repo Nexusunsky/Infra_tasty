@@ -12,10 +12,9 @@ FQDN=$(set_fqdn)
 export NAMESPACE="platform-kong"
 
 function ensure_namespace() {
-  kubectl delete namespace ${NAMESPACE} || bold " Delete namespace first."
+#  kubectl delete namespace ${NAMESPACE} || bold " Delete namespace first."
   bold "Ensuring namespace ${NAMESPACE} exists..."
-  kubectl create namespace "${NAMESPACE}" 2>/dev/null || \
-  bold "Namespace already in place"
+  kubectl create namespace "${NAMESPACE}" 2>/dev/null || bold "Namespace already in place"
 }
 
 function download_certificates {
@@ -52,7 +51,7 @@ helm init --force-upgrade
 
 bold "Installing kong-ingress"
 kubectl delete -f kong/kong-ingress.yml || bold " No kong-ingress exists. "
-kubectl apply -f kong/kong-ingress.yml
+#kubectl apply -f kong/kong-ingress.yml
 
 bold "update repo"
 helm repo update
