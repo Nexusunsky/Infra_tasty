@@ -29,7 +29,7 @@ admin:
   servicePort: 8444
   containerPort: 8444
   # Kong admin service type
-  type: LoadBalancer
+  type: NodePort
   # LoadBalancer: create a external ip and port
   # NodePort: create a internal ip and port
   # Set a nodePort which is available
@@ -37,18 +37,20 @@ admin:
   # Kong admin ingress settings.
   ingress:
     # Enable/disable exposure using ingress.
-    enabled: true
+    enabled: false
     # TLS secret name.
-    tls:
-      - hosts:
-          - kong.platform-dev.thoughtworks.net
-        secretName: tls-secret
+#    tls:
+#      - hosts:
+#          - kong.platform-dev.thoughtworks.net
+#        secretName: tls-secret
     # Array of ingress hosts.
     hosts:
       - "kong.platform-dev.thoughtworks.net"
     # Map of ingress annotations.
     annotations:
-      - kubernetes.io/ingress.class: nginx
+      kubernetes.io/ingress.global-static-ip-name: "platform-kong"
+      ingress.gcp.kubernetes.io/pre-shared-cert: "kong-platform-dev-thoughtworks-net-1552559973"
+      kubernetes.io/ingress.allow-http: "false"
     # Ingress path.
     path: /admin
 
@@ -72,7 +74,7 @@ proxy:
     containerPort: 8443
     # Set a nodePort which is available if service type is NodePort
     # nodePort: 32443
-  type: LoadBalancer
+  type: NodePort
   # LoadBalancer: create a external ip and port
   # NodePort: create a internal ip and port
 
@@ -81,18 +83,20 @@ proxy:
     # Enable/disable exposure using ingress.
     enabled: true
     # TLS secret name.
-    tls:
-      - hosts:
-          - kong.platform-dev.thoughtworks.net
-        secretName: tls-secret
+#    tls:
+#      - hosts:
+#          - kong.platform-dev.thoughtworks.net
+#        secretName: tls-secret
     # Array of ingress hosts.
     hosts:
       - "kong.platform-dev.thoughtworks.net"
     # Map of ingress annotations.
     annotations:
-      - kubernetes.io/ingress.class: nginx
+      kubernetes.io/ingress.global-static-ip-name: "platform-kong"
+      ingress.gcp.kubernetes.io/pre-shared-cert: "kong-platform-dev-thoughtworks-net-1552559973"
+      kubernetes.io/ingress.allow-http: "false"
     # Ingress path.
-    path: /proxy
+    path: /
 
 # Set runMigrations to run Kong migrations
 runMigrations: true
