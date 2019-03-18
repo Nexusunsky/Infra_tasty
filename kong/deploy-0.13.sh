@@ -49,18 +49,13 @@ cluster_login hyrule-dev
 bold "Installing Helm Tiller on k8s cluster"
 helm init --force-upgrade
 
-bold "Installing kong-ingress"
-kubectl delete -f kong/kong-ingress.yaml || bold " No kong-ingress exists. "
-#kubectl apply -f kong/kong-ingress.yaml
-
 bold "update repo"
 helm repo update
 
 bold "Uninstalling kong-server chart"
-helm del --purge kong-server || bold "No kong exits."
+helm del --purge kong-server-starting || bold "No kong exits."
 
 bold "Installing kong chart"
-helm install stable/kong --name kong-server -f kong/values-0.13.yaml --namespace ${NAMESPACE} --version 0.2.7
-#helm install stable/kong --name kong-server -f kong/values-1.0.yaml --namespace ${NAMESPACE} --version 0.9.6
+helm install stable/kong --name kong-server-starting -f kong/values-0.13.yaml --namespace ${NAMESPACE} --version 0.2.7
 
 

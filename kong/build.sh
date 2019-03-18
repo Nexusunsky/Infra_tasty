@@ -26,8 +26,9 @@ git clone https://github.com/rhuanhuan/kong-plugin-stdout-log.git ./kong-plugin-
 bold "Go back again..."
 cd ..
 
-export VERSION="${1:-0.13-1}"
-DOCKER_COMPOSE_SERVICE=apigw
+export VERSION="${1:-0.14}"
+export PHASE="${2:-starting}"
+DOCKER_COMPOSE_SERVICE=apigw-${PHASE}
 DOCKER_IMAGE=eu.gcr.io/techops-infradel/platform-api-gateway
 
 bold "Logging docker into gcloud..."

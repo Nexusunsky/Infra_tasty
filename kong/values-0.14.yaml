@@ -3,7 +3,7 @@
 
 image:
   repository: eu.gcr.io/techops-infradel/platform-api-gateway
-  tag: 0.14.1
+  tag: 0.14
   pullPolicy: IfNotPresent
 
 # Specify Kong admin and proxy services configurations
@@ -19,11 +19,11 @@ admin:
   servicePort: 8444
   containerPort: 8444
   # Kong admin service type
-  type: NodePort
+  type: LoadBalancer
   # LoadBalancer: create a external ip and port
   # NodePort: create a internal ip and port
   # Set a nodePort which is available
-  nodePort: 32444
+#  nodePort: 32444
 
 proxy:
   # If you want to specify annotations for the proxy service, uncomment the following
@@ -44,8 +44,8 @@ proxy:
     servicePort: 443
     containerPort: 8443
     # Set a nodePort which is available if service type is NodePort
-    nodePort: 32443
-  type: NodePort
+#    nodePort: 32443
+  type: LoadBalancer
   # LoadBalancer: create a external ip and port
   # NodePort: create a internal ip and port
 
@@ -95,7 +95,7 @@ readinessProbe:
   httpGet:
     path: "/status"
     port: admin
-    scheme: HTTPS
+    scheme: HTTP
   initialDelaySeconds: 120
   timeoutSeconds: 1
   periodSeconds: 10
@@ -107,7 +107,7 @@ livenessProbe:
   httpGet:
     path: "/status"
     port: admin
-    scheme: HTTPS
+    scheme: HTTP
   initialDelaySeconds: 180
   timeoutSeconds: 5
   periodSeconds: 30

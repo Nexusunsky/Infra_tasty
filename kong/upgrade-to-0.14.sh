@@ -3,8 +3,6 @@ set -e
 source kong/common.sh
 
 # MAIN
-BUCKET=tw-certs
-FQDN=$(set_fqdn)
 export NAMESPACE="platform-kong"
 
 function ensure_namespace() {
@@ -25,9 +23,9 @@ bold "update repo"
 helm repo update
 
 bold "Uninstalling kong-server chart"
-helm del --purge kong-server-0.14 || bold "No kong exits."
+helm del --purge kong-server-processing || bold "No kong exits."
 
 bold "Installing kong chart"
-helm install stable/kong --name kong-server-0.14 -f kong/values-0.14.yaml --namespace ${NAMESPACE} --version 0.4.1
+helm install stable/kong --name kong-server-processing -f kong/values-0.14.yaml --namespace ${NAMESPACE} --version 0.4.1
 
 

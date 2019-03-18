@@ -25,9 +25,9 @@ bold "update repo"
 helm repo update
 
 bold "Uninstalling kong-server chart"
-helm del --purge kong-server-0.14 || bold "No kong exits."
+helm del --purge kong-server-finishing || bold "No kong exits."
 
 bold "Installing kong chart"
-helm install stable/kong --name kong-server-0.14 -f kong/values-0.14.yaml --namespace ${NAMESPACE} --version 0.4.1
+helm install stable/kong --name kong-server-finishing -f kong/values-1.0.yaml --namespace ${NAMESPACE} --version 0.9.6
 
 
