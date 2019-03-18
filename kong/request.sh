@@ -67,3 +67,11 @@ curl -i \
   --header "Content-Type: application/json;charset=UTF-8" \
   --request GET \
   --url ${host}/apis
+
+export proxy=http://35.241.202.149
+curl -i \
+  --header "Content-Type: application/json;charset=UTF-8" \
+  --header "Authorization: Bearer eyJraWQiOiJ2cXJUcUk0Y3BzUmN0Z2I1bW52QmxFdUpDVGlmcHM4VG1mcnUxdDJSLXFvIiwiYWxnIjoiUlMyNTYifQ.eyJ2ZXIiOjEsImp0aSI6IkFULmRBcVQwSUVrTUtfUWh5eFI5TFhHNHpQaWVTYzNuaWVJVVRVRmVqd2c3elkiLCJpc3MiOiJodHRwczovL2Rldi0zOTU3NTYub2t0YXByZXZpZXcuY29tL29hdXRoMi9hdXNmYWZsbmVkaFNUU3A5WjBoNyIsImF1ZCI6IlBsYXRmb3JtIiwiaWF0IjoxNTUyOTEzNzA1LCJleHAiOjE1NTI5MTczMDUsImNpZCI6IjBvYWpidmY3NDUyWW9VMzJFMGg3Iiwic2NwIjpbImFwaSJdLCJzdWIiOiIwb2FqYnZmNzQ1MllvVTMyRTBoNyJ9.bDbfG7xX1YjvrO9WJpC_FiT04EMLBenNbDqf00QV_tznSIuZ2Sa_I3t5X4zQMuPe5oI-rLpn5oKMh7Qmw14hZ_HgIzgyAKUwI3h4zyeKTx2jJpALj8gB3XzHsEo7zGua9KN3pYspsoi1N7iBFv6mulBvTqIQyljPzCSPSMH9AsVjn2n4k1ddFBRDcchDtmNgh991OeyKd6ci-0boXJj3f4Q_qYF9myMeW_lohWIgYftQtG8ynG1FGwOMr6leGbS1RrHPiJ6DpptVIWk5nHsFsDsl1ept1d4cUlmIqUaB12RfgPMnM-WEl2oaDN9VQakqA_-MSwIwm1fdJUkrgeqVnA" \
+  --request GET \
+  --url ${proxy}/admin
+
