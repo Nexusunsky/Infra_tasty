@@ -6,8 +6,8 @@ apk add --update \
     curl \
     && rm -rf /var/cache/apk/*
 
-export host="http://104.199.107.43:8444"
-export proxy="https://35.233.29.223"
+export host="https://127.0.0.1:8444"
+export proxy="http://127.0.0.1:443"
 
 # ADMIN
 curl -i \
@@ -25,11 +25,6 @@ curl -i \
 curl -i \
   --header "Content-Type: application/json;charset=UTF-8" \
   --request GET \
-  --url ${host}/admin
-
-curl -i \
-  --header "Content-Type: application/json;charset=UTF-8" \
-  --request GET \
   --url ${host}/
 
 // Get All Services
@@ -42,9 +37,4 @@ curl -i \
 curl -i \
   --header "Content-Type: application/json;charset=UTF-8" \
   --request GET \
-  --url ${host}/admin
-
-curl -i \
-  --header "Content-Type: application/json;charset=UTF-8" \
-  --request GET \
-  --url ${host}/admin
+  --url ${proxy}/admin

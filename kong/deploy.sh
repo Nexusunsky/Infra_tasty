@@ -39,9 +39,9 @@ function deploy_certificate_secret() {
   --cert="./data/certs/${FQDN}/fullchain.pem"
 }
 
-#download_certificates
+download_certificates
 ensure_namespace "${NAMESPACE}"
-#deploy_certificate_secret
+deploy_certificate_secret
 
 bold "Login cluster of hyrule-dev"
 cluster_login hyrule-dev
@@ -58,6 +58,6 @@ helm repo update
 
 bold "Installing kong chart"
 helm del --purge kong-server || bold "No kong exits."
-helm install stable/kong --name kong-server -f kong/values.yaml --namespace ${NAMESPACE}
+#helm install stable/kong --name kong-server -f kong/values.yaml --namespace ${NAMESPACE}
 
 

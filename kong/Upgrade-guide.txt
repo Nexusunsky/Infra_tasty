@@ -1,0 +1,57 @@
+1, Upgrade from 0.13 to 0.14.1
+     a，leverage the request-termination plugin for stop the traffics.
+     b, Provision a 0.14 node and configure it as you wish (environment variables/ configuration file).
+        Make sure to point this new 0.14 node to your current datastore.
+     c, Without starting the 0.14 node, run the 0.14 migrations against your current datastore:
+        kong migrations up [-c kong.conf]
+     d, You can now provision a fresh 0.14 cluster pointing to your migrated datastore and start your 0.14 nodes.
+     e, Gradually switch your traffic from the 0.13 cluster to the new 0.14 cluster. Remember, once your database is
+     migrated, your 0.13 nodes will rely on their cache and not on the underlying database.
+     Your traffic should switch to the new cluster as quickly as possible.
+     f, Once your traffic is fully migrated to the 0.14 cluster, decommission your 0.13 cluster.
+
+2, Upgrade from 0.14.1 to 1.0.3
+
+   Preliminary Checks
+     a, You need to upgrade to 0.14.1 first
+     b, Kong 1.0 will refuse to run migrations if you have any entity configured using /apis in your datastore.
+        Create equivalent Routes and Services and delete your APIs.(Note that Kong does not do this automatically)
+     c, If you use additional plugins other than the ones bundled with Kong, make sure they are compatible with Kong 1.0 prior to upgrading.
+        See the section above on Plugins for information on plugin compatibility.
+
+   Step:
+     The full migration is now split into two steps, which are performed via commands
+        kong migrations up
+        kong migrations finish.
+
+     a, Download 1.0, and configure it to point to the same datastore as your 0.14 cluster. Run kong migrations up.
+     b, Both 0.14 and 1.0 nodes can now run simultaneously on the same datastore.
+        Start provisioning 1.0 nodes, but do not use their Admin API yet.
+        Prefer making Admin API requests to your 0.14 nodes instead.
+     c, Gradually divert traffic away from your 0.14 nodes, and into your 1.0 cluster.
+        Monitor your traffic to make sure everything is going smoothly.
+     d, When your traffic is fully migrated to the 1.0 cluster, decommission your 0.14 nodes
+     e, From your 1.0 cluster, run: kong migrations finish.
+        From this point on, it will not be possible to start 0.14 nodes pointing to the same datastore anymore.
+        Only run this command when you are confident that your migration was successful.
+        From now on, you can safely make Admin API requests to your 1.0 nodes.
+
+3, Demo path:
+1, Set up a 0.13 kong Cluster and
+   Add a Api for Test ,enable okta-auth plugin.
+   Make sure it works.
+
+2, upgrade from 0.13 to 0.14.1
+2, upgrade from 0.0.14.1 to 1.0.3
+
+
+
+
+
+
+
+
+
+
+
+
