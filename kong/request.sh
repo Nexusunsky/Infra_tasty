@@ -68,6 +68,7 @@ curl -i \
   --request GET \
   --url ${host}/apis
 
+# Upgrade success to 0.14.x
 export proxy=http://35.241.202.149
 curl -i \
   --header "Content-Type: application/json;charset=UTF-8" \
