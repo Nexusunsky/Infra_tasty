@@ -2,12 +2,17 @@
 
 password: rwIf1xgen5accG40
 
+# 1 Install Git
+# 2 Git Clone https://github.com/techops-infradel/kong-okta-auth-plugin.git
+# cp dir
+# Restart kong and enable plugin.
+
 apk add --update \
     curl \
     && rm -rf /var/cache/apk/*
 
-export host="https://127.0.0.1:8444"
-export proxy="http://127.0.0.1:443"
+export host="127.0.0.1:8444"
+export proxy="127.0.0.1:443"
 
 # ADMIN
 curl -i \
@@ -27,14 +32,16 @@ curl -i \
   --request GET \
   --url ${host}/
 
-// Get All Services
+# Get All Services
 curl -i \
   --header "Content-Type: application/json;charset=UTF-8" \
   --request GET \
   --url ${host}/services
 
-// Admin interface
+# Admin interface
 curl -i \
   --header "Content-Type: application/json;charset=UTF-8" \
   --request GET \
   --url ${proxy}/admin
+
+

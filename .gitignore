@@ -2,3 +2,4 @@
 .idea
 /data
 *.tgz
+kong/plugins/

@@ -51,13 +51,16 @@ helm init --force-upgrade
 
 bold "Installing kong-ingress"
 kubectl delete -f kong/kong-ingress.yml || bold " No kong-ingress exists. "
-#kubectl apply -f kong/kong-ingress.yml
+kubectl apply -f kong/kong-ingress.yml
 
 bold "update repo"
 helm repo update
 
-bold "Installing kong chart"
+bold "Uninstalling kong-server chart"
 helm del --purge kong-server || bold "No kong exits."
-#helm install stable/kong --name kong-server -f kong/values.yaml --namespace ${NAMESPACE}
+
+bold "Installing kong chart"
+helm install stable/kong --name kong-server -f kong/values-0.13.yaml --namespace ${NAMESPACE} --version 0.2.7
+#helm install stable/kong --name kong-server -f kong/values-1.0.yaml --namespace ${NAMESPACE} --version 0.9.6
 
 
