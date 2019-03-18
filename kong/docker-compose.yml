@@ -26,7 +26,12 @@ services:
       context: .
       dockerfile: processing.Dockerfile
     environment:
-      - KONG_PG_HOST=kong-database
+      - KONG_DATABASE=kong
+      - KONG_PG_USER=postgres
+      - KONG_PG_PASSWORD=rwIf1xgen5accG40
+      - KONG_PG_DATABASE=kong
+      - KONG_PG_HOST=35.240.88.144
+      - KONG_PG_PORT=5432
       - KONG_PROXY_ACCESS_LOG=/dev/stdout
       - KONG_ADMIN_ACCESS_LOG=/dev/stdout
       - KONG_PROXY_ERROR_LOG=/dev/stderr
@@ -45,7 +50,12 @@ services:
       context: .
       dockerfile: finishing.Dockerfile
     environment:
-      - KONG_PG_HOST=kong-database
+      - KONG_DATABASE=kong
+      - KONG_PG_USER=postgres
+      - KONG_PG_PASSWORD=rwIf1xgen5accG40
+      - KONG_PG_DATABASE=kong
+      - KONG_PG_HOST=35.241.230.16
+      - KONG_PG_PORT=5432
       - KONG_PROXY_ACCESS_LOG=/dev/stdout
       - KONG_ADMIN_ACCESS_LOG=/dev/stdout
       - KONG_PROXY_ERROR_LOG=/dev/stderr

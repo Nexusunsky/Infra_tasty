@@ -42,7 +42,7 @@
    Make sure it works.
 
 2, upgrade from 0.13 to 0.14.1
-2, upgrade from 0.0.14.1 to 1.0.3
+2, upgrade from 0.14.1 to 1.0.3
 
 
 

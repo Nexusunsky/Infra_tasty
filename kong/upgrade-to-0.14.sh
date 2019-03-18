@@ -26,6 +26,6 @@ bold "Uninstalling kong-server chart"
 helm del --purge kong-server-processing || bold "No kong exits."
 
 bold "Installing kong chart"
-helm install stable/kong --name kong-server-processing -f kong/values-0.14.yaml --namespace ${NAMESPACE} --version 0.4.1
+helm install stable/kong --name kong-server-processing -f kong/values-0.14.yaml --namespace ${NAMESPACE} --version 0.7.3
 
 
