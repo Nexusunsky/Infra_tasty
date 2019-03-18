@@ -26,7 +26,7 @@ git clone https://github.com/rhuanhuan/kong-plugin-stdout-log.git ./kong-plugin-
 bold "Go back again..."
 cd ..
 
-export VERSION="${1:-0.13}"
+export VERSION="${1:-0.13-1}"
 DOCKER_COMPOSE_SERVICE=apigw
 DOCKER_IMAGE=eu.gcr.io/techops-infradel/platform-api-gateway
 

@@ -13,7 +13,7 @@ spec:
           - backend:
               serviceName: kong-server-kong-proxy
               servicePort: kong-proxy
-            path: /proxy
+            path: /
   tls:
     - hosts:
         - kong.platform-dev.thoughtworks.net

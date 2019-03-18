@@ -39,9 +39,9 @@ function deploy_certificate_secret() {
   --cert="./data/certs/${FQDN}/fullchain.pem"
 }
 
-download_certificates
+#download_certificates
 ensure_namespace "${NAMESPACE}"
-deploy_certificate_secret
+#deploy_certificate_secret
 
 bold "Login cluster of hyrule-dev"
 cluster_login hyrule-dev
@@ -50,8 +50,8 @@ bold "Installing Helm Tiller on k8s cluster"
 helm init --force-upgrade
 
 bold "Installing kong-ingress"
-kubectl delete -f kong/kong-ingress.yml || bold " No kong-ingress exists. "
-kubectl apply -f kong/kong-ingress.yml
+kubectl delete -f kong/kong-ingress.yaml || bold " No kong-ingress exists. "
+#kubectl apply -f kong/kong-ingress.yaml
 
 bold "update repo"
 helm repo update

@@ -12,15 +12,16 @@ apk add --update \
     && rm -rf /var/cache/apk/*
 
 export host="127.0.0.1:8444"
-export proxy="127.0.0.1:443"
+export proxy="127.0.0.1:8443"
 
-# ADMIN
+# Service ADMIN
 curl -i \
   --header "Content-Type: application/json;charset=UTF-8" \
   --request POST \
   --data '{"name": "Admin-service", "url": "http://127.0.0.1:8444"}' \
   --url ${host}/services
 
+# Route ADMIN
 curl -i \
   --header "Content-Type: application/json;charset=UTF-8" \
   --request POST \
@@ -38,10 +39,31 @@ curl -i \
   --request GET \
   --url ${host}/services
 
+
+
+# Api ADMIN
+curl -i \
+  --header "Content-Type: application/json;charset=UTF-8" \
+  --request POST \
+  --data '{"name": "Api-Admin", "upstream_url": "http://127.0.0.1:8444", "uris": "/admin"}' \
+  --url ${host}/apis
+
+curl -X POST ${host}/apis/Api-Admin/plugins \
+  --data "name=okta-auth" \
+  --data "config.authorization_server=https://dev-395756.oktapreview.com/oauth2/ausfaflnedhSTSp9Z0h7" \
+  --data "config.client_id=0oajbvf7452YoU32E0h7" \
+  --data "config.client_secret=jPVHgU8HpNpha4JGCAjpO9HLj_59AtPZNiAUZ7Eh" \
+  --data "config.api_version=v1" \
+  --data "config.check_auth_server=true"
+
 # Admin interface
 curl -i \
   --header "Content-Type: application/json;charset=UTF-8" \
+  --header "Authorization: Bearer eyJraWQiOiJ2cXJUcUk0Y3BzUmN0Z2I1bW52QmxFdUpDVGlmcHM4VG1mcnUxdDJSLXFvIiwiYWxnIjoiUlMyNTYifQ.eyJ2ZXIiOjEsImp0aSI6IkFULmJWcE9kSVE4Z25uYnkyWGhBbnVFdVNWQ3EzZ3VvalYzVlV2YllHNGRkS0kiLCJpc3MiOiJodHRwczovL2Rldi0zOTU3NTYub2t0YXByZXZpZXcuY29tL29hdXRoMi9hdXNmYWZsbmVkaFNUU3A5WjBoNyIsImF1ZCI6IlBsYXRmb3JtIiwiaWF0IjoxNTUyOTAyNzQwLCJleHAiOjE1NTI5MDYzNDAsImNpZCI6IjBvYWpidmY3NDUyWW9VMzJFMGg3Iiwic2NwIjpbImFwaSJdLCJzdWIiOiIwb2FqYnZmNzQ1MllvVTMyRTBoNyJ9.Zwui0QdY2guaOTFzGD_zS28Iw8CRovAvVc3Sjcbt4nXmn1UGRhs3RrHf5-wu7kqK9S1r4YqO6M-OmMpkeiJxuipwFyjKTGEcxAMbFiuSNQpk2qpTc-WOV_-kwaUI3xF-kOu2ae1cby0UWX0KIe9OKr00wr5YCK1GP6tSzDjdaLaPrBgSbN1UnwMiFxlDNL9sCEWvYZUt4JK1Y-n_-j7heyzKG_G-0viCJHTtO2-bmKOlA_qV9S7xh37wJm_N6bx35WmPn3UKm4FRimHsHAgODvsfmLYjI8KCGpSY9JUcKWSw9wxiWdiY1ufmV_NebukJ7RlzwG8j1OAcI0kmoqIRkQ" \
   --request GET \
   --url ${proxy}/admin
 
-
+curl -i \
+  --header "Content-Type: application/json;charset=UTF-8" \
+  --request GET \
+  --url ${host}/apis
