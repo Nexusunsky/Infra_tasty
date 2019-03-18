@@ -5,7 +5,7 @@ services:
     image: eu.gcr.io/techops-infradel/platform-api-gateway:0.13-1
     build:
       context: .
-      dockerfile: starting.Dockerfile
+      dockerfile: dockerfile/starting.Dockerfile
     environment:
       - KONG_PG_HOST=kong-database
       - KONG_PROXY_ACCESS_LOG=/dev/stdout
@@ -24,7 +24,7 @@ services:
     image: eu.gcr.io/techops-infradel/platform-api-gateway:0.14
     build:
       context: .
-      dockerfile: processing.Dockerfile
+      dockerfile: dockerfile/processing.Dockerfile
     environment:
       - KONG_DATABASE=kong
       - KONG_PG_USER=postgres
@@ -48,7 +48,7 @@ services:
     image: eu.gcr.io/techops-infradel/platform-api-gateway:1.03
     build:
       context: .
-      dockerfile: finishing.Dockerfile
+      dockerfile: dockerfile/finishing.Dockerfile
     environment:
       - KONG_DATABASE=kong
       - KONG_PG_USER=postgres
