@@ -25,7 +25,7 @@ helm repo update
 bold "Uninstalling kong-server chart"
 helm del --purge kong-server-finishing || bold "No kong exits."
 
-bold "migration kong "
+bold "migration kong jobs"
 kubectl delete -f kong/migration || bold "No migration job exits."
 kubectl apply -f kong/migration
 

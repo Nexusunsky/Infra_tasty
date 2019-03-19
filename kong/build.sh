@@ -8,7 +8,7 @@ bold "Clean all plugins file..."
 rm -rf kong/plugins/*
 
 # Version for different plugin version
-PLUGIN_VERSION=1.3.0-1
+PLUGIN_VERSION=1.3.0-3
 bold "Clone kong-okta-auth-plugin version ${PLUGIN_VERSION}..."
 git clone https://github.com/techops-infradel/kong-okta-auth-plugin.git kong/plugins/kong-okta-auth-plugin && \
     cd kong/plugins/kong-okta-auth-plugin &&\
