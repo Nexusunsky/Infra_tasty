@@ -3,7 +3,7 @@
 
 image:
   repository: eu.gcr.io/techops-infradel/platform-api-gateway
-  tag: 0.13-1
+  tag: 0.13-stable
   pullPolicy: IfNotPresent
 
 # Specify Kong admin and proxy services configurations
@@ -29,7 +29,6 @@ proxy:
   #  service.beta.kubernetes.io/aws-load-balancer-proxy-protocol: "*"
   # HTTPS traffic on the proxy port
   useTLS: false
-  loadBalancerIP: 35.244.134.141
   servicePort: 8443
   containerPort: 8443
   type: LoadBalancer
@@ -48,7 +47,7 @@ env:
   pg_database: kong
   pg_host: 35.241.230.16
   pg_port: 5432
-
+  custom_plugins: okta-auth,stdout-log
 # If you want to specify resources, uncomment the following
 # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
 resources: {}

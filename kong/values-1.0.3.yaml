@@ -3,7 +3,7 @@
 
 image:
   repository: eu.gcr.io/techops-infradel/platform-api-gateway
-  tag: 1.0.3-4
+  tag: 1.0.3-stable
 #  repository: kong
 #  tag: 1.0.3
   pullPolicy: IfNotPresent

@@ -3,7 +3,7 @@
 
 image:
   repository: eu.gcr.io/techops-infradel/platform-api-gateway
-  tag: 0.14
+  tag: 0.14-stable
   pullPolicy: IfNotPresent
 
 # Specify Kong admin and proxy services configurations
@@ -79,7 +79,7 @@ env:
   pg_database: kong
   pg_host: 35.241.230.16
   pg_port: 5432
-
+  plugins: bundled,okta-auth,stdout-log
 # If you want to specify resources, uncomment the following
 # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
 resources: {}

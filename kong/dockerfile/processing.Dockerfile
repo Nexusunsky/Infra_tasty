@@ -16,6 +16,6 @@ RUN cd /opt/kong-custom-plugin/kong-okta-auth-plugin && \
     cd /opt/kong-custom-plugin/kong-plugin-stdout-log && \
     luarocks make
 
-COPY upgrade/ /usr/local/bin/
+COPY processing/ /usr/local/bin/
 
 CMD ["/usr/local/bin/start-kong.sh"]
