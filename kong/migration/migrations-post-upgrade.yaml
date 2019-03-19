@@ -1,0 +1,60 @@
+# Why is this Job duplicated and not using only helm hooks?
+# See: https://github.com/helm/charts/pull/7362
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: kong-server-finishing-post-upgrade-migrations
+  namespace: platform-kong
+  labels:
+    app: kong
+    chart: kong-0.9.7
+    release: kong-server-finishing
+    heritage: Tiller
+    component: post-upgrade-migrations
+  annotations:
+    helm.sh/hook: "post-upgrade"
+    helm.sh/hook-delete-policy: "before-hook-creation"
+spec:
+  template:
+    metadata:
+      name: kong-post-upgrade-migrations
+      labels:
+        app: kong
+        release: kong-server-finishing
+        component: post-upgrade-migrations
+    spec:
+      containers:
+      - name: kong-upgrade-migrations
+        image: "eu.gcr.io/techops-infradel/platform-api-gateway:1.0.3-2"
+        imagePullPolicy: IfNotPresent
+        env:
+          - name: KONG_ADMIN_LISTEN
+            value: 0.0.0.0:8444
+          - name: KONG_PROXY_LISTEN
+            value: 0.0.0.0:8000
+          - name: KONG_NGINX_DAEMON
+            value: "off"
+          - name: KONG_PROXY_ACCESS_LOG
+            value: /dev/stdout
+          - name: KONG_ADMIN_ACCESS_LOG
+            value: /dev/stdout
+          - name: KONG_PROXY_ERROR_LOG
+            value: /dev/stderr
+          - name: KONG_ADMIN_ERROR_LOG
+            value: /dev/stderr
+          - name: KONG_DATABASE
+            value: postgres
+          - name: KONG_PG_DATABASE
+            value: kong
+          - name: KONG_PG_HOST
+            value: 35.241.230.16
+          - name: KONG_PG_PASSWORD
+            value: rwIf1xgen5accG40
+          - name: KONG_PG_PORT
+            value: "5432"
+          - name: KONG_PG_USER
+            value: postgres
+          - name: KONG_PLUGINS
+            value: bundled,okta-auth,stdout-log
+        command: [ "/bin/sh", "-c", "kong migrations finish --vv" ]
+      restartPolicy: OnFailure

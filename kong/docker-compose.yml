@@ -2,7 +2,8 @@ version: '3.2'
 
 services:
   apigw-starting:
-    image: eu.gcr.io/techops-infradel/platform-api-gateway:0.13-1
+#   0.13-1
+    image: eu.gcr.io/techops-infradel/platform-api-gateway:${VERSION}
     build:
       context: .
       dockerfile: dockerfile/starting.Dockerfile
@@ -21,7 +22,8 @@ services:
       - 8444:8444
 
   apigw-processing:
-    image: eu.gcr.io/techops-infradel/platform-api-gateway:0.14
+    # 0.14
+    image: eu.gcr.io/techops-infradel/platform-api-gateway:${VERSION}
     build:
       context: .
       dockerfile: dockerfile/processing.Dockerfile
@@ -45,7 +47,8 @@ services:
       - 8444:8444
 
   apigw-finishing:
-    image: eu.gcr.io/techops-infradel/platform-api-gateway:1.03
+    # 1.0.3-1
+    image: eu.gcr.io/techops-infradel/platform-api-gateway:${VERSION}
     build:
       context: .
       dockerfile: dockerfile/finishing.Dockerfile
@@ -60,7 +63,7 @@ services:
       - KONG_ADMIN_ACCESS_LOG=/dev/stdout
       - KONG_PROXY_ERROR_LOG=/dev/stderr
       - KONG_ADMIN_ERROR_LOG=/dev/stderr
-      - KONG_CUSTOM_PLUGINS=okta-auth,stdout-log
+      - KONG_PLUGINS=bundled,okta-auth,stdout-log
       - KONG_ADMIN_LISTEN=0.0.0.0:8001
     ports:
       - 8000:8000

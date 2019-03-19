@@ -7,7 +7,8 @@ source kong/common.sh
 bold "Clean all plugins file..."
 rm -rf kong/plugins/*
 
-PLUGIN_VERSION=1.2.3-rc
+# Version for different plugin version
+PLUGIN_VERSION=1.3.0-1
 bold "Clone kong-okta-auth-plugin version ${PLUGIN_VERSION}..."
 git clone https://github.com/techops-infradel/kong-okta-auth-plugin.git kong/plugins/kong-okta-auth-plugin && \
     cd kong/plugins/kong-okta-auth-plugin &&\
@@ -26,7 +27,7 @@ git clone https://github.com/rhuanhuan/kong-plugin-stdout-log.git ./kong-plugin-
 bold "Go back again..."
 cd ..
 
-export VERSION="${1:-0.14}"
+export VERSION="${1:-0.14.1}"
 export PHASE="${2:-starting}"
 DOCKER_COMPOSE_SERVICE=apigw-${PHASE}
 DOCKER_IMAGE=eu.gcr.io/techops-infradel/platform-api-gateway

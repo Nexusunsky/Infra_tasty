@@ -3,8 +3,6 @@ set -e
 source kong/common.sh
 
 # MAIN
-BUCKET=tw-certs
-FQDN=$(set_fqdn)
 export NAMESPACE="platform-kong"
 
 function ensure_namespace() {
@@ -13,10 +11,10 @@ function ensure_namespace() {
   kubectl create namespace "${NAMESPACE}" 2>/dev/null || bold "Namespace already in place"
 }
 
-ensure_namespace "${NAMESPACE}"
-
 bold "Login cluster of hyrule-dev"
 cluster_login hyrule-dev
+
+ensure_namespace "${NAMESPACE}"
 
 bold "Installing Helm Tiller on k8s cluster"
 helm init --force-upgrade
@@ -25,9 +23,9 @@ bold "update repo"
 helm repo update
 
 bold "Uninstalling kong-server chart"
-helm del --purge kong-server-finishing || bold "No kong exits."
+helm del --purge kong-server-processing || bold "No kong exits."
 
 bold "Installing kong chart"
-helm install stable/kong --name kong-server-finishing -f kong/values-1.0.yaml --namespace ${NAMESPACE} --version 0.9.6
+helm install stable/kong --name kong-server-processing -f kong/values-0.14.1.yaml --namespace ${NAMESPACE} --version 0.7.3
 
 

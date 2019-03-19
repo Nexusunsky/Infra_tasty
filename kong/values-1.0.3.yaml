@@ -2,10 +2,10 @@
 # Declare variables to be passed into your templates.
 
 image:
-#  repository: eu.gcr.io/techops-infradel/platform-api-gateway
-#  tag: 0.13
-  repository: kong
-  tag: 1.0.3
+  repository: eu.gcr.io/techops-infradel/platform-api-gateway
+  tag: 1.0.3-3
+#  repository: kong
+#  tag: 1.0.3
   pullPolicy: IfNotPresent
   ## Optionally specify an array of imagePullSecrets.
   ## Secrets must be manually created in the namespace.
@@ -99,7 +99,17 @@ proxy:
     path: /
 
 # Set runMigrations to run Kong migrations
-runMigrations: true
+runMigrations: false
+
+kong:
+  env:
+    database: postgres
+    pg_user: postgres
+    pg_password: rwIf1xgen5accG40
+    pg_database: kong
+    pg_host: 35.241.230.16
+    pg_port: 5432
+    plugins: bundled,okta-auth,stdout-log
 
 # Specify Kong configurations
 # Kong configurations guide https://getkong.org/docs/latest/configuration/
@@ -110,6 +120,7 @@ env:
   pg_database: kong
   pg_host: 35.241.230.16
   pg_port: 5432
+  plugins: bundled,okta-auth,stdout-log
 
 # If you want to specify resources, uncomment the following
 # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
