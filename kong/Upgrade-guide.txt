@@ -42,6 +42,9 @@
    Make sure it works.
 
 2, upgrade from 0.13 to 0.14.1
+    Migrate manually of api to service and routes.
+    and enable plugin in a new way.
+
 2, upgrade from 0.14.1 to 1.0.3
 
 
