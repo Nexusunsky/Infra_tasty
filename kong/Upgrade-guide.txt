@@ -37,25 +37,147 @@
         From now on, you can safely make Admin API requests to your 1.0 nodes.
 
 3, Demo path:
-1, Set up a 0.13 kong Cluster and
-   Add a Api for Test ,enable okta-auth plugin.
-   Make sure it works.
+    1, Set up a 0.13 kong Cluster and
+    Add a Api for Test ,enable okta-auth plugin.
+    Make sure it works.
 
-2, upgrade from 0.13 to 0.14.1
+    2, upgrade from 0.13 to 0.14.1
     Migrate manually of api to service and routes.
     and enable plugin in a new way.
 
-2, upgrade from 0.14.1 to 1.0.3
-    a, upgrade plugin for adapt new version pdk
-    b,
+    2, upgrade from 0.14.1 to 1.0.3
+    Upgrade plugin code for adapt new version pdk
+    migrate datastore.
 
+4, Operator Step
+    1, kong/build.sh 0.13-stable starting
 
+    2, kong/deploy-0.13.sh
 
+    3, Request:
+        Kubectl get all -n platform-kong
+        export admin="${AdminLoadbalancerIp}:8444"
+        export proxy="${ProxyLoadbalancerIp}:8443"
 
+        Test Admin:
+        curl -i \
+          --header "Content-Type: application/json;charset=UTF-8" \
+          --request GET \
+          --url ${admin}/
 
+        Test proxy:
+        curl -i \
+          --header "Content-Type: application/json;charset=UTF-8" \
+          --request GET \
+          --url ${proxy}/
 
+        Test apis is empty.
+        curl -i \
+          --header "Content-Type: application/json;charset=UTF-8" \
+          --request GET \
+          --url ${admin}/apis
 
+        Register Api Entity by publish admin to kong
+        curl -i \
+          --header "Content-Type: application/json;charset=UTF-8" \
+          --request POST \
+          --data '{"name": "Api-Admin", "upstream_url": "http://127.0.0.1:8444", "uris": "/admin"}' \
+          --url ${admin}/apis
 
+        Enable okta-auht plugin.
+        curl -X POST ${admin}/apis/Api-Admin/plugins \
+          --data "name=okta-auth" \
+          --data "config.authorization_server=https://dev-395756.oktapreview.com/oauth2/ausfaflnedhSTSp9Z0h7" \
+          --data "config.client_id=0oajbvf7452YoU32E0h7" \
+          --data "config.client_secret=jPVHgU8HpNpha4JGCAjpO9HLj_59AtPZNiAUZ7Eh" \
+          --data "config.api_version=v1" \
+          --data "config.check_auth_server=true"
 
+        Consume Admin though proxy.
+        curl -i \
+          --header "Content-Type: application/json;charset=UTF-8" \
+          --header "Authorization: Bearer eyJraWQiOiJ2cXJUcUk0Y3BzUmN0Z2I1bW52QmxFdUpDVGlmcHM4VG1mcnUxdDJSLXFvIiwiYWxnIjoiUlMyNTYifQ.eyJ2ZXIiOjEsImp0aSI6IkFULmIwYXg2WUwwWHVDY1JXR3lMS0FjQmVvSlhEVFpTQjZCUUhsYlBJWEVGd00iLCJpc3MiOiJodHRwczovL2Rldi0zOTU3NTYub2t0YXByZXZpZXcuY29tL29hdXRoMi9hdXNmYWZsbmVkaFNUU3A5WjBoNyIsImF1ZCI6IlBsYXRmb3JtIiwiaWF0IjoxNTUyOTg4ODQ3LCJleHAiOjE1NTI5OTI0NDcsImNpZCI6IjBvYWpidmY3NDUyWW9VMzJFMGg3Iiwic2NwIjpbImFwaSJdLCJzdWIiOiIwb2FqYnZmNzQ1MllvVTMyRTBoNyJ9.JFLyfsjyjYYMd6Pqjp9-EblHDL5s9hIcWNzNiLuwxIvtMmbOG6UCH2uD9hszyMUVuzDx9zj1_iaW_9vlRdQwN-APV_NdStrlMVXtOL-xOgbAwC6hlEG55PLCTVDa9gjEckcOkcJuT8y_IKN08tRHXEV4Kamxo4WXXz-iofP4x_MhJaiHKjmf6Kq_v2GDNep19JAuLMNTPYd0F6OAyV3ksSXFKGqe7dChy2VZp9OrJeR97M9iRLJyXxQmjwjHYzQtjwAGN0e94cV3Q-WCORVSLhUeI2X6NXcFzPdcnCU1d-tRNcNd8WFeN0Sr8AN7S_qIfhwvQ_flDT84c4Tf1Lku1g" \
+          --request GET \
+          --url ${proxy}/admin
 
+    4, kong/build.sh 0.14-stable processing
 
+    5, Terminate Request to kong by enable request-termination plugin.
+       curl -i -X POST ${admin}/plugins \
+         --data "name=request-termination"
+
+    6, Test for Terminate plugin by consume admin.
+        curl -i \
+          --header "Content-Type: application/json;charset=UTF-8" \
+          --header "Authorization: Bearer eyJraWQiOiJ2cXJUcUk0Y3BzUmN0Z2I1bW52QmxFdUpDVGlmcHM4VG1mcnUxdDJSLXFvIiwiYWxnIjoiUlMyNTYifQ.eyJ2ZXIiOjEsImp0aSI6IkFULmIwYXg2WUwwWHVDY1JXR3lMS0FjQmVvSlhEVFpTQjZCUUhsYlBJWEVGd00iLCJpc3MiOiJodHRwczovL2Rldi0zOTU3NTYub2t0YXByZXZpZXcuY29tL29hdXRoMi9hdXNmYWZsbmVkaFNUU3A5WjBoNyIsImF1ZCI6IlBsYXRmb3JtIiwiaWF0IjoxNTUyOTg4ODQ3LCJleHAiOjE1NTI5OTI0NDcsImNpZCI6IjBvYWpidmY3NDUyWW9VMzJFMGg3Iiwic2NwIjpbImFwaSJdLCJzdWIiOiIwb2FqYnZmNzQ1MllvVTMyRTBoNyJ9.JFLyfsjyjYYMd6Pqjp9-EblHDL5s9hIcWNzNiLuwxIvtMmbOG6UCH2uD9hszyMUVuzDx9zj1_iaW_9vlRdQwN-APV_NdStrlMVXtOL-xOgbAwC6hlEG55PLCTVDa9gjEckcOkcJuT8y_IKN08tRHXEV4Kamxo4WXXz-iofP4x_MhJaiHKjmf6Kq_v2GDNep19JAuLMNTPYd0F6OAyV3ksSXFKGqe7dChy2VZp9OrJeR97M9iRLJyXxQmjwjHYzQtjwAGN0e94cV3Q-WCORVSLhUeI2X6NXcFzPdcnCU1d-tRNcNd8WFeN0Sr8AN7S_qIfhwvQ_flDT84c4Tf1Lku1g" \
+          --request GET \
+          --url ${proxy}/admin
+
+    7, kong/upgrade-to-0.14.1.sh
+
+    8, Remove kong 0.13
+       kong/remove-0.13.sh
+
+    9, Request for migrate Api to Services and Route.
+       Kubectl get all -n platform-kong
+       export admin="${AdminLoadbalancerIp}:8444"
+       export proxy="${ProxyLoadbalancerIp}:8443"
+
+       Create Service
+       curl -i \
+         --header "Content-Type: application/json;charset=UTF-8" \
+         --request POST \
+         --data '{"name": "Admin-service", "url": "http://127.0.0.1:8444"}' \
+         --url ${admin}/services
+
+       Create Route
+       curl -i \
+         --header "Content-Type: application/json;charset=UTF-8" \
+         --request POST \
+         --data '{"methods": ["GET", "POST", "PUT", "DELETE"],"protocols": ["http", "https"],"paths": ["/admin"]}' \
+         --url ${admin}/services/Admin-service/routes
+
+       Enable plugin
+       curl -X POST ${admin}/services/Admin-service/plugins \
+         --data "name=okta-auth" \
+         --data "config.authorization_server=https://dev-395756.oktapreview.com/oauth2/ausfaflnedhSTSp9Z0h7" \
+         --data "config.client_id=0oajbvf7452YoU32E0h7" \
+         --data "config.client_secret=jPVHgU8HpNpha4JGCAjpO9HLj_59AtPZNiAUZ7Eh" \
+         --data "config.api_version=v1" \
+         --data "config.check_auth_server=true"
+
+       Delete Api
+       curl -i \
+         --header "Content-Type: application/json;charset=UTF-8" \
+         --request DELETE \
+         --url ${admin}/apis/Api-Admin
+
+       Check Api for Remove admin Success.
+       curl -i \
+         --header "Content-Type: application/json;charset=UTF-8" \
+         --request GET \
+         --url ${admin}/apis
+
+       Disable Request Termination Plugin.
+       curl -i -X GET ${admin}/plugins
+       curl -i -X DELETE ${admin}/plugins/{TerminationPluginId}
+
+       Consume Admin thought service and route.
+       curl -i \
+         --header "Content-Type: application/json;charset=UTF-8" \
+         --header "Authorization: Bearer eyJraWQiOiJ2cXJUcUk0Y3BzUmN0Z2I1bW52QmxFdUpDVGlmcHM4VG1mcnUxdDJSLXFvIiwiYWxnIjoiUlMyNTYifQ.eyJ2ZXIiOjEsImp0aSI6IkFULnJKZlB2Y0lNVlNneWpYNDlFMi1TNzY1SXdNYUIzSVNmeE5Mc3Joc1I1bEkiLCJpc3MiOiJodHRwczovL2Rldi0zOTU3NTYub2t0YXByZXZpZXcuY29tL29hdXRoMi9hdXNmYWZsbmVkaFNUU3A5WjBoNyIsImF1ZCI6IlBsYXRmb3JtIiwiaWF0IjoxNTUyOTYxMzM1LCJleHAiOjE1NTI5NjQ5MzUsImNpZCI6IjBvYWpidmY3NDUyWW9VMzJFMGg3Iiwic2NwIjpbImFwaSJdLCJzdWIiOiIwb2FqYnZmNzQ1MllvVTMyRTBoNyJ9.FPmKTbQhgadak0NYZGTW9_AFB0LfT3iUZz8rh1GLKdp_mzkj6uQ1URYq4YaCOcDy04r0HaBs2hGrqDcZMYRqz7EFb517JXR5gS1xgVQBaG1ZgaooanT3FLO5vpKusQ9uAoj_wGjyd7mGEjGQub-_kTezmirh4UOSB7t6WD7eFVagwrScY01s7vfPQabpgf2QKo2GKUJXkfhMC21yyQRRWSti0x1pPLx0ghb9v6-YnFnLe93fX4lA1L90POX4gTiWM0XfR1M-k4TJNxMkqxlWXimudqt7GHQSs4obIgHqXVkxXBWk9_cc9SBtyYjKJ6ttl4g_yPaIr-duSE0CkStxNg" \
+         --request GET \
+         --url ${proxy}/admin
+
+    10, kong/build.sh 1.0.3-stable finishing
+
+    11, NO-downtime
+        kong/upgrade-to-1.0.3.sh
+
+    12, Remove kong 0.14.1
+        kong/remove-0.14.sh
+
+    13, Test it by Domain in Postman.
+        By Consume admin
+        then Creat a new Upstream like Baidu and enable okta-auth plugin.
+        https://kong.platform-dev.thoughtworks.net/
