@@ -6,9 +6,9 @@ bold "Starting kong..."
 bold "Inject kong.conf"
 kong prepare -p "/usr/local/kong" --vv
 
-bold "Running migrations..."
-kong migrations up -c /usr/local/bin/kong.conf --vv
-kong migrations finish -vv
+#bold "Running migrations..."
+#kong migrations up -c /usr/local/bin/kong.conf --vv
+#kong migrations finish -vv
 
 #kong migrations bootstrap
 
