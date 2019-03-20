@@ -50,7 +50,9 @@
     migrate datastore.
 
 4, Operator Step
-    1, kong/build.sh 0.13-stable starting
+    1, Build Image -- kong 0.13.0
+       Set PLUGIN_VERSION=1.2.3-rc # for version lower then 1.0.x
+       kong/build.sh 0.13-stable starting
 
     2, kong/deploy-0.13.sh
 
@@ -100,7 +102,9 @@
           --request GET \
           --url ${proxy}/admin
 
-    4, kong/build.sh 0.14-stable processing
+    4, Build Image -- kong 0.14.1
+       Set PLUGIN_VERSION=1.3.0-3 # for version higher then 1.0.x
+       kong/build.sh 0.14-stable processing
 
     5, Terminate Request to kong by enable request-termination plugin.
        curl -i -X POST ${admin}/plugins \
@@ -169,7 +173,9 @@
          --request GET \
          --url ${proxy}/admin
 
-    10, kong/build.sh 1.0.3-stable finishing
+    10, Build Image -- kong 1.0.3
+        Set PLUGIN_VERSION=1.3.0-3 # for version higher then 1.0.x
+        kong/build.sh 1.0.3-stable finishing
 
     11, NO-downtime
         kong/upgrade-to-1.0.3.sh
