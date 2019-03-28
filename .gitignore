@@ -3,3 +3,6 @@
 /data
 *.tgz
 kong/plugins/
+kong/helm/kong
+ServiceMesh/kong-mesh-dist-kubernetes
+ServiceMesh/kong-mesh-http-demo
