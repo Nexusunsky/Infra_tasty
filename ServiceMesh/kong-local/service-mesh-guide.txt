@@ -1,0 +1,199 @@
+docker build -t service-mesh-kong:dev .
+
+Step 1: Start Service B
+Open a fourth console and start Service B listening on HTTPS traffic:
+ncat --listen \
+     --keep-open \
+     --verbose \
+     --ssl \
+     --sh-exec "echo 'HTTP/1.1 200 OK\r\n\r\nHello from Service B'" \
+     127.0.0.5 18443
+
+Step 2: Ensure that Service A can connect Service B
+Connect with Service B using HTTPS:
+curl --interface 127.0.0.2 --insecure https://127.0.0.5:18443
+
+Step 3: Start Kong Control Plane
+KONG_PREFIX=kong \
+  KONG_LOG_LEVEL=debug \
+  KONG_STREAM_LISTEN="off" \
+  KONG_PROXY_LISTEN="off" \
+  KONG_ADMIN_LISTEN="127.0.0.1:8001, 127.0.0.1:8444 ssl" \
+  kong start -c /service-mesh/kong.conf
+
+Step 4: Start Kong A-sidecar
+KONG_PREFIX=kong-a-sidecar \
+  KONG_LOG_LEVEL=debug \
+  KONG_STREAM_LISTEN="127.0.0.3:9000 transparent" \
+  KONG_PROXY_LISTEN="127.0.0.3:8000 transparent, 127.0.0.3:8443 ssl transparent" \
+  KONG_ADMIN_LISTEN="off" \
+  KONG_NGINX_PROXY_PROXY_BIND="127.0.0.3" \
+  kong start -c /service-mesh/kong.conf
+
+Step 5: Start Kong B-sidecar
+KONG_PREFIX=kong-b-sidecar \
+  KONG_LOG_LEVEL=debug \
+  KONG_STREAM_LISTEN="127.0.0.4:9000 transparent" \
+  KONG_PROXY_LISTEN="127.0.0.4:8000 transparent, 127.0.0.4:8443 transparent ssl" \
+  KONG_ADMIN_LISTEN="off" \
+  KONG_NGINX_PROXY_PROXY_BIND="127.0.0.4" \
+  kong start -c /service-mesh/kong.conf
+
+Step 6:Create Kong Services and Routes
+curl -i -X GET \
+     http://127.0.0.1:8001/services
+
+curl -i -X GET \
+     http://127.0.0.1:8001/routes
+
+curl -i -X DELETE \
+     http://127.0.0.1:8001/services/service-b-https
+
+curl -X POST \
+     -d name=service-b-https \
+     -d url=https://127.0.0.5:18443/ \
+     http://127.0.0.1:8001/services
+
+curl -X POST \
+       -d name=service-b-https-route \
+       -d protocols=https \
+       -d hosts=127.0.0.5 \
+       http://127.0.0.1:8001/services/service-b-https/routes
+
+Step 7: Configure Transparent Proxying Rules. (In Cluster, infra do it for us.)
+Add transparent proxying rules for Service A.
+They make Service A to connect Kong A instead of connecting to to Service B directly as we saw on Step 2.
+Configure iptables on Service A:
+#######################
+Service A : 127.0.0.2
+Kong A-sidecar : 127.0.0.3
+#######################
+
+Config for Service A: 19000(tcp) to Kong A: 9000 (tcp and tls)
+iptables --insert PREROUTING \
+                --table mangle \
+                --protocol tcp \
+                --dport 19000 \
+                --source 127.0.0.2 \
+                --jump TPROXY \
+                --on-port=9000 \
+                --on-ip=127.0.0.3
+
+Config for Service A: 19000(tls) to Kong A: 9000 (tcp and tls)
+iptables --insert PREROUTING \
+                --table mangle \
+                --protocol tcp \
+                --dport 19443 \
+                --source 127.0.0.2 \
+                --jump TPROXY \
+                --on-port=9000 \
+                --on-ip=127.0.0.3
+
+Config for Service A: 18000(http) to Kong A: 8000(http)
+iptables --insert PREROUTING \
+                --table mangle \
+                --protocol tcp \
+                --dport 18000 \
+                --source 127.0.0.2 \
+                --jump TPROXY \
+                --on-port=8000 \
+                --on-ip=127.0.0.3
+
+Config for Service A: 18443(https) to Kong A: 8443(https)
+iptables --insert PREROUTING \
+                --table mangle \
+                --protocol tcp \
+                --dport 18443 \
+                --source 127.0.0.2 \
+                --jump TPROXY \
+                --on-port=8443 \
+                --on-ip=127.0.0.3
+
+Configure more rules for intercepting traffic destined for Service B,
+and send it to Kong B instead:
+#######################
+Service B : 127.0.0.5
+Kong B-sidecar : 127.0.0.4
+#######################
+
+Config for Kong B-sidecar: 19000(tcp) to Service B: 8443(https)
+iptables --append PREROUTING \
+                --table mangle \
+                --protocol tcp \
+                "!" --source 127.0.0.4 \
+                --dport 19000 \
+                --destination 127.0.0.5 \
+                --jump TPROXY \
+                --on-port=9000 \
+                --on-ip=127.0.0.4
+
+Config for Kong B-sidecar: 19443(tls) to Service B: 9000 (tcp and tls)
+iptables --append PREROUTING \
+                --table mangle \
+                --protocol tcp \
+                "!" --source 127.0.0.4 \
+                --dport 19443 \
+                --destination 127.0.0.5 \
+                --jump TPROXY \
+                --on-port=9000 \
+                --on-ip=127.0.0.4
+
+Config for Kong B-sidecar: 18000(http) to Service B: 8000 (http)
+iptables --append PREROUTING \
+                --table mangle \
+                --protocol tcp \
+                "!" --source 127.0.0.4 \
+                --dport 18000 \
+                --destination 127.0.0.5 \
+                --jump TPROXY \
+                --on-port=8000 \
+                --on-ip=127.0.0.4
+
+Config for Kong B-sidecar: 18443(https) to Service B: 8443 (https)
+iptables --append PREROUTING \
+                --table mangle \
+                --protocol tcp \
+                "!" --source 127.0.0.4 \
+                --dport 18443 \
+                --destination 127.0.0.5 \
+                --jump TPROXY \
+                --on-port=8443 \
+                --on-ip=127.0.0.4
+
+Step 8: Start tailing Kong Logs
+By Viewing log then prove Service Mesh.
+
+We did not need to make any changes to Service A or Service B,
+but we introduced a sidecar proxy to each of them while successfully demonstrating that
+Kong is capable to proxy both raw tcp and tls streams and http and https traffic.
+
+tail -F kong-a-sidecar/logs/error.log
+tail -F kong-b-sidecar/logs/error.log
+
+Step 9: Connect Service A to Service B using Two Sidecars
+Connect using HTTPS:
+curl --interface 127.0.0.2 --insecure https://127.0.0.5:18443
+
+In Kong we call it Service Mesh only when the connection between the two sidecars,
+Kong A and Kong B, is mutually TLS authenticated.
+
+Step 10: Stop Kong Nodes and Cleanup
+Cleanup the iptables rules:
+    iptables --table mangle --flush PREROUTING
+
+Stop Kong B:
+    KONG_PREFIX=kong-b-sidecar kong stop
+
+Stop Kong A:
+    KONG_PREFIX=kong-a-sidecar kong stop
+
+Stop Kong Control Plane:
+    KONG_PREFIX=kong kong stop
+
+Stop Tailing Kong Logs:
+    pkill tail
+
+Stop Ncat Servers:
+    pkill ncat
+
+
